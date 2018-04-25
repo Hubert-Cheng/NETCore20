@@ -1,7 +1,49 @@
-﻿@{
-    ViewData["Title"] = "About";
+﻿@using System.Collections
+@using System.Diagnostics
+@using System.Reflection
+@{
+    ViewBag.Title = "About";
 }
-<h2>@ViewData["Title"]</h2>
-<h3>@ViewData["Message"]</h3>
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
 
-<p>Use this area to provide additional information.</p>
+<p>@(Environment.Is64BitProcess ? "x64" : "x86") process, <p>@(System.Environment.Is64BitOperatingSystem ? "x64" : "x86") OS</p>
+
+@foreach (Assembly asm in ViewBag.Assemblies)
+{
+    <p>
+        @try
+        {
+            @asm.FullName
+            @Html.Raw(" ")
+            @asm.Location
+        }
+        catch (Exception e)
+        {
+            @e.ToString()
+        }
+    </p>
+}
+
+<hr />
+
+<h2>ProcessModules:</h2>
+@foreach (ProcessModule proc in (ProcessModuleCollection)ViewBag.Modules)
+{
+    <p>
+        @proc.FileName
+    </p>
+}
+
+<hr />
+
+<h2>EnvironmentVariables</h2>
+<table>
+    @foreach (DictionaryEntry variable in (IDictionary)ViewBag.EnvironmentVariables)
+    {
+        <tr>
+            <th>@variable.Key</th>
+            <td>@variable.Value</td>
+        </tr>
+    }
+</table>
